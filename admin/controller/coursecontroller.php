@@ -15,7 +15,7 @@ class CourseController extends Course {
     public $id;
 
     private function invalidDesc() {
-        return strlen(trim($this->description)) >= 30; // at least 30 characters
+        return strlen(trim($this->description)) >= 30;
     }
 
     private function emptyInput() {
@@ -24,7 +24,7 @@ class CourseController extends Course {
 
     public function img($image) {
         if (empty($image['name'])) {
-            return null; // No new image provided
+            return null;
         }
 
         $uploadDir = '../../uploads/';

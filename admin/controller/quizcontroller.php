@@ -46,7 +46,6 @@ class QuizController extends Quiz{
             return json_encode(["message"=>"Module not found for the selected course.","status"=>400]);
         }
 
-        // ✅ Check existing question count for this course
         $count = $this->countQuestionsByCourse($this->course_id);
         if ($count >= 10) {
             return json_encode([
