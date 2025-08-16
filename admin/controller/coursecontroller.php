@@ -137,6 +137,7 @@ class CourseController extends Course {
         if (is_array($matResult) && isset($matResult['error'])) {
             return json_encode(["message"=>$matResult['error'], "status"=>400]);
         }
+        $challenge = isset($this->challenge) && $this->challenge === 'on' ? 1 : 0;
 
         $this->updateCourse(
             $this->id,
@@ -146,7 +147,7 @@ class CourseController extends Course {
             $this->link,
             $this->uniqmaterial ?? null,
             $this->coin,
-            $this->challenge
+            $challenge
         );
 
         return json_encode(["message"=>"successful","status"=>200]);

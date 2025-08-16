@@ -19,15 +19,15 @@ if($check){
         extract($row);
 
         $post_item = [
-            'course_id'=>trim($course_id),
-            'title'=>htmlentities(strip_tags(trim($name))),
-            'coin'=>trim($name),
-            'challenge'=>trim($challenge),
-            'content'=>html_entity_decode(trim($description)),
-            'link'=>trim($link),
-            'material'=>strip_tags(trim($material))
-          
+            'course_id' => trim($course_id ?? ''),
+            'title'     => htmlentities(strip_tags(trim($name ?? ''))),
+            'coin'      => trim($coin ?? ''),           // <-- was 'name', maybe a bug
+            'challenge' => trim($challenge ?? '0'),     // default 0 if null
+            'content'   => html_entity_decode(trim($description ?? '')),
+            'link'      => trim($link ?? ''),
+            'material'  => strip_tags(trim($material ?? ''))
         ];
+
 
         array_push($post_arr['data'],$post_item);
 

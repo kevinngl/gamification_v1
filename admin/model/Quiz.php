@@ -31,6 +31,14 @@ class Quiz extends Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function countQuizByCourseId($courseId) {
+        $query = "SELECT COUNT(*) AS total FROM quiz WHERE course_id = ?";
+        $stmt = $this->connect()->prepare($query);
+        $stmt->execute([$courseId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['total'] ?? 0;
+    }
+
     public function deletequiz($quizId) {
         try {
             $sql = "DELETE FROM quiz WHERE id = ?";

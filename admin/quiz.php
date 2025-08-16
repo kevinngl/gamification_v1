@@ -33,6 +33,9 @@
                                                       <select  class="form-control" id="course" name ="course">
                                                         
                                                       </select>
+                                                      <div class="col-12">
+                                                          <p id="quizCount" class="text-primary fw-bold"></p>
+                                                      </div>
                                                   </div>
                                                 </div>
                                         </div>
@@ -100,25 +103,55 @@
 <script>
     $(document).ready(function(){
         $.ajax({
-                url: 'api/course/courseView.php',
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                // Populate the select element with options
+            url: 'api/course/courseView.php',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
                 var select = $('#course');
                 $.each(response.data, function(index, value) {
                     select.append('<option value="' + value.course_id + '">' + value.title + '</option>');
                 });
+
+                if(select.val()){
+                    fetchQuizCount(select.val());
+                }
+            },
+            error: function() {
+                console.error('Failed to fetch courses');
+            }
+        });
+
+        $('#course').on('change', function(){
+            var courseId = $(this).val();
+            if(courseId){
+                fetchQuizCount(courseId);
+            } else {
+                $('#quizCount').text('');
+            }
+        });
+
+        function fetchQuizCount(courseId){
+            $.ajax({
+                url: 'api/quiz/countquiz.php',
+                type: 'GET',
+                data: { course_id: courseId },
+                dataType: 'json',
+                success: function(response){
+                    if(response.status === "success"){
+                        $('#quizCount').text("Existing Questions: " + response.total);
+                    } else {
+                        $('#quizCount').text("Error fetching count");
+                    }
                 },
-                error: function() {
-                console.error('Failed to fetch categories');
+                error: function(){
+                    $('#quizCount').text("Failed to load count");
                 }
             });
+        }
 
-
-            //quiz
-            $("#quizupload").on('submit', function(e){
-         e.preventDefault();
+        //quiz
+        $("#quizupload").on('submit', function(e){
+            e.preventDefault();
 
 
           const question = $('#question').val();
@@ -142,12 +175,12 @@
             $('.msg').html('<span class="alert alert-danger alert-dismissible my-2"> Fields can not be empty</span>');
           return false
          }
-         //ajax request to add quiz questions 
+         //ajax request to add quiz questions
 
          $.ajax({
              type:'POST',
              url: 'api/quiz/createquiz.php',
-             data: formData, 
+             data: formData,
             dataType:'json',
              contentType:false,
              cache: false,
@@ -159,28 +192,26 @@
              },
              success:function(response){
                  $('.msg').html('');
-              
+
                if(response.message==="successful"){
                      $('#quizupload')[0].reset();
                      $('.msg').html("<p   class='alert alert-success'>MCQ added successfully!</p>");
                      $('.submitquiz').html("submit");
-        
-                 
+
+
                  }else{
                   $('#quizupload')[0].reset();
                      $('.msg').html("<p class='alert  alert-danger'>"+response.message+"</p>");
                      $('.submitquiz').html("Try Again");
                  }
-                 
+
                  $('#quizupload').css("opacity","");
                  $(".submitquiz").removeAttr("disabled");
 
-                
+
              }
          });
          //
      });
-
-            //
     })
 </script>

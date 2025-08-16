@@ -14,18 +14,31 @@ class Course extends Database {
             }
 
         }
-        protected function updateCourse($id,$name,$description,$image,$link,$material,$coin,$challenge){
-            
-            $sql = $this->connect()->prepare("UPDATE `course` SET `name`= ?,`description`= ?,`image`= ? ,`link`= ?,`material`= ?,`coin`= ?,`challenge`= ? WHERE `course_id`= ?");
-            if($sql->execute([$name,$description,$image,$link,$material,$coin,$challenge,$id])){
-                return true;
-            }else{
-        
-                throw new Exception ("User can not be created");
-            }
+    protected function updateCourse($id, $name, $description, $image, $link, $material, $coin, $challenge) {
 
+        // Base SQL and parameters
+        $sqlStr = "UPDATE `course` SET `name` = ?, `description` = ?, `link` = ?, `material` = ?, `coin` = ?, `challenge` = ?";
+        $params = [$name, $description, $link, $material, $coin, $challenge];
+
+        // Only update image if a new one is provided
+        if (!empty($image)) {
+            $sqlStr .= ", `image` = ?";
+            $params[] = $image;
         }
-        public function getCourse(){
+
+        $sqlStr .= " WHERE `course_id` = ?";
+        $params[] = $id;
+
+        $sql = $this->connect()->prepare($sqlStr);
+
+        if ($sql->execute($params)) {
+            return true;
+        } else {
+            throw new Exception("Course cannot be updated");
+        }
+    }
+
+    public function getCourse(){
             $sql= $this->connect()->prepare('SELECT * FROM course');
              $sql->execute();
 
