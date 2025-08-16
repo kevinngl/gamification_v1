@@ -40,26 +40,26 @@
                                      <div class="bg-white shadow-sm w-100 py-4 mb-3">
                                         <div class="col-12">
                                             <div class="mb-2">
-                                                <label for="optionA" class="form-label">Option A</label>
-                                                <input type="text" class="form-control" id="optionA" name="optionA">
+                                                <label for="option_a" class="form-label">Option A</label>
+                                                <input type="text" class="form-control" id="option_a" name="option_a">
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="mb-2">
-                                                <label for="optionB" class="form-label">Option B</label>
-                                                <input type="text" class="form-control" id="optionB" name="optionB">
+                                                <label for="option_b" class="form-label">Option B</label>
+                                                <input type="text" class="form-control" id="option_b" name="option_b">
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="mb-2">
-                                                <label for="optionC" class="form-label">Option C</label>
-                                                <input type="text" class="form-control" id="optionC" name="optionC">
+                                                <label for="option_c" class="form-label">Option C</label>
+                                                <input type="text" class="form-control" id="option_c" name="option_c">
                                             </div>
                                         </div>
                                         <div class="col-12">
                                             <div class="mb-2">
-                                                <label for="optionD" class="form-label">Option D</label>
-                                                <input type="text" class="form-control" id="optionD" name="optionD">
+                                                <label for="option_d" class="form-label">Option D</label>
+                                                <input type="text" class="form-control" id="option_d" name="option_d">
                                             </div>
                                         </div>
                                         
@@ -70,14 +70,14 @@
                                             <div class="mb-2">
                                                 <label for="answer" class="form-label">Select Answer</label>
                                                 <select id="answer" name="answer" class="form-control">
-                                                  <option value="optionA">option A </option>
-                                                  <option value="optionB">option B</option>
-                                                  <option value="optionC">option C </option>
-                                                  <option value="optionD">option D</option>
+                                                  <option value="option_a">option A </option>
+                                                  <option value="option_b">option B</option>
+                                                  <option value="option_c">option C </option>
+                                                  <option value="option_d">option D</option>
                                                 </select>
                                             </div>
                                           </div>
-                                         
+
                                     </div>
                                     <div class="shadow-sm w-100 py-2">
                                         <div class="col-12">
@@ -92,7 +92,7 @@
                             </div>
                         </div>
                     </section>
-                   
+
   <?php
     include "./layout/footer.php";
 ?>
@@ -119,26 +119,26 @@
             //quiz
             $("#quizupload").on('submit', function(e){
          e.preventDefault();
-        
-         
+
+
           const question = $('#question').val();
           const course = $('#course').val();
-          const optionA = $('#optionA').val();
-          const optionB = $('#optionB').val();
-          const optionC = $('#optionC').val();
-          const optionD = $('#optionD').val();
+          const option_a = $('#option_a').val();
+          const option_b = $('#option_b').val();
+          const option_c = $('#option_c').val();
+          const option_d = $('#option_d').val();
           const answer = $('#answer').val();
-              
+
           const formData = new FormData(this);
             formData.append('question', question);
             formData.append('course', course);
-            formData.append('optionA', optionA);
-            formData.append('optionB', optionB);
-            formData.append('optionC', optionC);
-            formData.append('optionD', optionD);
+            formData.append('option_a', option_a);
+            formData.append('option_b', option_b);
+            formData.append('option_c', option_c);
+            formData.append('option_d', option_d);
             formData.append('answer', answer);
-         
-         if(question ==="" || course ==="" || optionA ==="" || optionB ==="" || optionC ==="" || optionD ==="" || answer ==="" ){
+
+         if(question ==="" || course ==="" || option_a ==="" || option_b ==="" || option_c ==="" || option_d ==="" || answer ==="" ){
             $('.msg').html('<span class="alert alert-danger alert-dismissible my-2"> Fields can not be empty</span>');
           return false
          }
@@ -157,7 +157,7 @@
                  $('.submitquiz').html(" Please wait....");
                  $('#quizupload').css("opacity",".5");
              },
-             success:function(response){ 
+             success:function(response){
                  $('.msg').html('');
               
                if(response.message==="successful"){

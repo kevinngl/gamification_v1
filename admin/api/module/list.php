@@ -20,7 +20,7 @@ if($check){
 
         $post_item = [
             'module_id'=>trim($module_id),
-            'title'=>html_entity_decode(strip_tags(trim($title)))
+            "title"     => html_entity_decode(strip_tags(trim($name))) // FIXED: use name column
           
           
         ];

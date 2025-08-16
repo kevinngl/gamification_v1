@@ -9,10 +9,10 @@ if($_POST){
     $quiz = new QuizController();
     $quiz->question  = strip_tags(trim($_POST['question']?? ''));
     $quiz->course_id = (int) strip_tags(trim($_POST['course']?? 0));
-    $quiz->optionA = strip_tags(trim($_POST['optionA']?? ''));
-    $quiz->optionB = strip_tags(trim($_POST['optionB']?? ''));
-    $quiz->optionC = strip_tags(trim($_POST['optionC']?? ''));
-    $quiz->optionD = strip_tags(trim($_POST['optionD']?? ''));
+    $quiz->option_a = strip_tags(trim($_POST['option_a']?? ''));
+    $quiz->option_b = strip_tags(trim($_POST['option_b']?? ''));
+    $quiz->option_c = strip_tags(trim($_POST['option_c']?? ''));
+    $quiz->option_d = strip_tags(trim($_POST['option_d']?? ''));
     $quiz->answer = strip_tags(trim($_POST['answer']?? ''));
 
     echo $quiz->Create();

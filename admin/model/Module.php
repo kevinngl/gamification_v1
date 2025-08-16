@@ -10,7 +10,7 @@ class Module extends Database {
     //Inserting new data into the database
         protected function setModule($course_id,$title,$content){
             
-            $sql = $this->connect()->prepare("INSERT  INTO module(course_id,title,content) VALUES (?,?,?)");
+            $sql = $this->connect()->prepare("INSERT  INTO module(course_id,name,description) VALUES (?,?,?)");
             if($sql->execute([$course_id,$title,$content])){
                 return true;
             }else{

@@ -1,7 +1,8 @@
-<?php 
+<?php
 
 require "../../model/Course.php";
-class CourseController extends Course{
+
+class CourseController extends Course {
     public $name;
     public $description;
     public $image;
@@ -11,169 +12,148 @@ class CourseController extends Course{
     public $challenge;
     public $uniqimage;
     public $uniqmaterial;
-
     public $id;
 
-    public $result;
-
-
-    private function title(){
-       
-        if(!preg_match("/^[a-zA-Z0-9]*$/",$this->name)){
-            $this->result = false;
-        }else{
-            $this->result = true;
-        }
-
-        return $this->result;
-    }
-  
-    
     private function invalidDesc() {
-        $this->result = true; // Reset to true at the beginning
-        if (str_word_count($this->description) < 10) {
-            $this->result = false;
-        }
-        return $this->result;
+        return strlen(trim($this->description)) >= 30; // at least 30 characters
     }
-    
+
     private function emptyInput() {
-        $this->result = true; // Reset to true at the beginning
-        if (empty($this->name) || empty($this->description) || empty($this->image)) {
-            $this->result = false;
+        return !(empty($this->name) || empty($this->description));
+    }
+
+    public function img($image) {
+        if (empty($image['name'])) {
+            return null; // No new image provided
         }
-        return $this->result;
-    }
 
-    public function img($image){
-        // Decode base64-encoded image data
-  
-       
-
-           //upload directory
-           $uploadDir = '../../uploads/'; 
-           if (!file_exists($uploadDir)) {
-               mkdir($uploadDir,0777);
-           }else{
-            $imageName = $image['name'];
-                
-                $imageTmpName = $image['tmp_name'];
-                $imageType = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
-
-                // Generate a unique filename
-                $this->uniqimage = uniqid('image_') . '.' . $imageType;
-
-                // Check if the file type is allowed
-                $allowedTypes = ['jpeg', 'jpg', 'png','webp'];
-                if (!in_array($imageType, $allowedTypes)) {
-                    die("Only JPEG, JPG, and PNG files are allowed.");
-                }
-
-                // Move the uploaded file to a server directory with the unique filename
-               
-                $targetPath = $uploadDir . $this->uniqimage;
-                if (move_uploaded_file($imageTmpName, $targetPath)){
-                    return true;
-                }else{
-                    return false;
-                }
-
-
-           }   
-    }
-
-    public function uploadMaterial($file)
-{
-    // Upload directory
-    $uploadDir = '../../Material/';
-
-    // Check if the directory exists, and create it if not
-    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
-        die("Failed to create the upload directory.");
-    }
-
-    // Get file information
-    $fileName = $file['name'];
-    $fileTmpName = $file['tmp_name'];
-    $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-    // Generate a unique filename
-    $this->uniqmaterial = uniqid('gam_') . '.' . $fileType;
-
-    // Check if the file type is allowed
-    $allowedTypes = ['pdf', 'docx', 'doc', 'txt', 'zip', 'rar', 'md', 'ppt', 'pptx', 'odp'];
-    if (!in_array($fileType, $allowedTypes)) {
-        die("Only PDF, DOCX, DOC, TXT, ZIP, RAR, MD, PPT, and PowerPoint files are allowed.");
-    }
-
-    // Move the uploaded file to the server directory with the unique filename
-    $targetPath = $uploadDir . $this->uniqmaterial;
-
-    // Check for errors during the upload
-    if (move_uploaded_file($fileTmpName, $targetPath)) {
-        return true; // Successful upload
-    } else {
-        $uploadError = $file['error'];
-        switch ($uploadError) {
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                die("The uploaded file exceeds the maximum file size limit.");
-            case UPLOAD_ERR_PARTIAL:
-                die("The file was only partially uploaded.");
-            case UPLOAD_ERR_NO_FILE:
-                die("No file was uploaded.");
-            case UPLOAD_ERR_NO_TMP_DIR:
-                die("Missing temporary folder.");
-            case UPLOAD_ERR_CANT_WRITE:
-                die("Failed to write the file to disk.");
-            case UPLOAD_ERR_EXTENSION:
-                die("A PHP extension stopped the file upload.");
-            default:
-                die("Unknown upload error.");
+        $uploadDir = '../../uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir,0777,true);
         }
-    }
-}
 
-    public function Create(){
-        if(!$this->emptyInput()|| !$this->invalidDesc() ){
-            return json_encode(["message" => "incorrect field input"]);
+        $imageName = $image['name'];
+        $imageTmpName = $image['tmp_name'];
+        $imageType = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
+
+        // Validate type
+        $allowedTypes = ['jpeg', 'jpg', 'png','webp'];
+        if (!in_array($imageType, $allowedTypes)) {
+            return ["error" => "Only JPEG, JPG, PNG, and WEBP files are allowed."];
         }
-       else{
-             
-                if($this->img($this->image)){
-                    $this->uploadMaterial($this->material);
-                    $this->setCourse($this->name,$this->description,$this->uniqimage,$this->link,$this->uniqmaterial,$this->coin,$this->challenge);
-                    return json_encode(["message"=>"successful","status"=>200]);
-                }else{
-                    return json_encode(["message"=>"failed uploading image","status"=>503]);
-                }
-               
-        
+
+        // Validate size (8MB)
+        if ($image['size'] > 8 * 1024 * 1024) {
+            return ["error" => "Image too large! Max size is 8 MB."];
+        }
+
+        // Generate unique filename
+        $this->uniqimage = bin2hex(random_bytes(8)) . '.' . $imageType;
+        $targetPath = $uploadDir . $this->uniqimage;
+
+        if (move_uploaded_file($imageTmpName, $targetPath)) {
+            return true;
+        }
+        return ["error" => "Failed to upload image."];
+    }
+
+    public function uploadMaterial($file) {
+        if (empty($file['name'])) {
+            return null; // No new material provided
+        }
+
+        $uploadDir = '../../Material/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir,0777,true);
+        }
+
+        $fileName = $file['name'];
+        $fileTmpName = $file['tmp_name'];
+        $fileType = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        $allowedTypes = ['pdf', 'docx', 'doc', 'txt', 'zip', 'rar', 'md', 'ppt', 'pptx', 'odp'];
+        if (!in_array($fileType, $allowedTypes)) {
+            return ["error" => "Invalid material file type."];
+        }
+
+        if ($file['size'] > 8 * 1024 * 1024) {
+            return ["error" => "Material file too large! Max size is 8 MB."];
+        }
+
+        $this->uniqmaterial = bin2hex(random_bytes(8)) . '.' . $fileType;
+        $targetPath = $uploadDir . $this->uniqmaterial;
+
+        if (move_uploaded_file($fileTmpName, $targetPath)) {
+            return true;
+        }
+        return ["error" => "Failed to upload material."];
+    }
+
+    public function Create() {
+        if (!$this->emptyInput()) {
+            return json_encode(["message" => "Name and description are required", "status"=>400]);
+        }
+        if (!$this->invalidDesc()) {
+            return json_encode(["message" => "Description is too short (min 30 characters)", "status"=>400]);
+        }
+
+        $imgResult = $this->img($this->image);
+        if (is_array($imgResult) && isset($imgResult['error'])) {
+            return json_encode(["message"=>$imgResult['error'], "status"=>400]);
+        }
+
+        $matResult = $this->uploadMaterial($this->material);
+        if (is_array($matResult) && isset($matResult['error'])) {
+            return json_encode(["message"=>$matResult['error'], "status"=>400]);
+        }
+
+        $this->setCourse(
+            $this->name,
+            $this->description,
+            $this->uniqimage ?? null,
+            $this->link,
+            $this->uniqmaterial ?? null,
+            $this->coin,
+            $this->challenge
+        );
+
+        return json_encode(["message"=>"successful","status"=>200]);
+    }
+
+    public function Update() {
+        if (!$this->emptyInput()) {
+            return json_encode(["message" => "Name and description are required", "status"=>400]);
+        }
+        if (!$this->invalidDesc()) {
+            return json_encode(["message" => "Description is too short (min 30 characters)", "status"=>400]);
+        }
+
+        $imgResult = $this->img($this->image);
+        if (is_array($imgResult) && isset($imgResult['error'])) {
+            return json_encode(["message"=>$imgResult['error'], "status"=>400]);
+        }
+
+        $matResult = $this->uploadMaterial($this->material);
+        if (is_array($matResult) && isset($matResult['error'])) {
+            return json_encode(["message"=>$matResult['error'], "status"=>400]);
+        }
+
+        $this->updateCourse(
+            $this->id,
+            $this->name,
+            $this->description,
+            $this->uniqimage ?? null,
+            $this->link,
+            $this->uniqmaterial ?? null,
+            $this->coin,
+            $this->challenge
+        );
+
+        return json_encode(["message"=>"successful","status"=>200]);
+    }
+
+    public function Course() {
+        return $this->getCourse();
     }
 }
-public function Update(){
-    if(!$this->emptyInput() || !$this->invalidDesc() ){
-        return json_encode(["message" => "incorrect field input"]);
-    }
-   else{
-         
-            if($this->img($this->image)){
-                $this->uploadMaterial($this->material);
-                $this->updateCourse($this->id,$this->name,$this->description,$this->uniqimage,$this->link,$this->uniqmaterial,$this->coin,$this->challenge);
-                return json_encode(["message"=>"successful","status"=>200]);
-            }else{
-                return json_encode(["message"=>"failed uploading image","status"=>503]);
-            }
-           
-    
-}
-}
-    public function Course(){
-     return   $this->getCourse();
-    }
-}
-
-
-
-
 ?>

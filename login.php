@@ -27,7 +27,9 @@
                         <div class="row">
                             <div class="col-12 lh-sm text-center py-4">
                                 <h3 class="fw-bold">
-                                    LOGO
+                                    <a href="./index.php" class="text-decoration-none text-dark">
+                                        LOGO
+                                    </a>
                                 </h3>
                             </div>
                             <div class="col-12">

@@ -23,8 +23,6 @@ if(!isLoggedIn())
                                   </div>
                                   <input type="hidden" id="usery" value=" <?php echo isset($_SESSION['user_id']) ? $_SESSION['user_id'] : ""; ?>">
                             </div>
-                            
-                            
                         </div>
                     </div>
                     <div class="col-lg-8 col-md-8 col-sm-12" id="question-section">
@@ -231,7 +229,7 @@ $(document).ready(function() {
   }
 
   function checkAnswer(selectedChoice) {
-    const correctIndex = getCorrectIndex(questions[currentQuestion].correct_answer);
+    const correctIndex = getCorrectIndex(questions[currentQuestion].answer);
 
     if (selectedChoice == correctIndex) {
       score += calculateScore();
@@ -272,7 +270,7 @@ $(document).ready(function() {
 
   function revealAnswers() {
     $('#reveal-answer').show();
-      $('#correct-answer').text(questions.map(q => q.correct_answer).join(', '));
+      $('#correct-answer').text(questions.map(q => q.answer).join(', '));
       awardBadges();
   }
 
@@ -360,7 +358,7 @@ function displayAllAnswers() {
 
   questions.forEach(function (q, index) {
     // const correctIndex = getCorrectIndex(q.answer);
-      const correctIndex = getCorrectIndex(q.correct_answer);
+      const correctIndex = getCorrectIndex(q.answer);
     const correctChoice = ['A', 'B', 'C', 'D'][correctIndex];
 
     const userChoice = $('input[name="radioNoLabel"]:checked').eq(index).val();
