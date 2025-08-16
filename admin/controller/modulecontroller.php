@@ -34,15 +34,9 @@ class ModuleController extends Module{
     }
 
     private function invalidContent(){
-       
-        if(str_word_count($this->content) < 10){
-            
-            $this->result = false;
-        }else{
-            $this->result = true;
-        }
 
-        return $this->result;
+        return str_word_count($this->content) < 10;
+
     }
 
    
@@ -51,22 +45,39 @@ class ModuleController extends Module{
 
     //insert
 
-    public function Create(){
+    public function Create() {
         $this->clean();
-        if(!$this->emptyInput()|| !$this->invalidContent() ){
-            return json_encode(["message" => "incorrect field input"]);
-        }
-       else{
-             
-        $this->setModule($this->course_id,$this->title,$this->content);
-        return json_encode(["message"=>"successful","status"=>200]);
 
-               
-        
+        // If any input is empty
+        if (!$this->emptyInput()) {
+            return json_encode([
+                "status" => "error",
+                "message" => "All fields are required"
+            ]);
+        }
+
+        // If content is invalid
+        if ($this->invalidContent()) {
+            return json_encode([
+                "status" => "error",
+                "message" => "Content must be at least 10 words long"
+            ]);
+        }
+
+        // If all validations passed, insert into DB
+        if ($this->setModule($this->course_id, $this->title, $this->content)) {
+            return json_encode([
+                "status" => "success",
+                "message" => "Module created successfully"
+            ]);
+        } else {
+            return json_encode([
+                "status" => "error",
+                "message" => "Database error: could not create module"
+            ]);
+        }
     }
-}
-    
-    
+
 
 } 
 

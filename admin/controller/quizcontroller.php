@@ -4,11 +4,11 @@ require_once "../../model/Quiz.php";
 class QuizController extends Quiz{
     public $question;
     public $course_id;
-    public $optionA;
-    public $optionB;
-    public $optionC;
+    public $option_a;
+    public $option_b;
+    public $option_c;
 
-    public $optionD;
+    public $option_d;
     public $answer;
     
 
@@ -16,7 +16,7 @@ class QuizController extends Quiz{
 
     private function emptyInput(){
         
-        if(empty($this->question) || empty ($this->course_id) || empty ($this->optionA) || empty ($this->optionB) || empty ($this->optionC) || empty ($this->optionD) || empty ($this->answer)){
+        if(empty($this->question) || empty ($this->course_id) || empty ($this->option_a) || empty ($this->option_b) || empty ($this->option_c) || empty ($this->option_d) || empty ($this->answer)){
 
             $this->result = false;
         }else{
@@ -36,8 +36,8 @@ class QuizController extends Quiz{
     }
 
     public function Create(){
-        if(!$this->emptyInput()){ 
-            return json_encode(["message"=>"empty fields","status"=>400]); 
+        if(!$this->emptyInput()){
+            return json_encode(["message"=>"empty fields","status"=>400]);
         }
 
         $foundModuleId = $this->getModuleByIdCourse($this->course_id);
@@ -46,11 +46,32 @@ class QuizController extends Quiz{
             return json_encode(["message"=>"Module not found for the selected course.","status"=>400]);
         }
 
-        if($this->setQuiz($foundModuleId, $this->course_id, $this->question, $this->optionA, $this->optionB, $this->optionC, $this->optionD, $this->answer)){
+        $count = $this->countQuestionsByCourse($this->course_id);
+        if ($count >= 10) {
+            return json_encode([
+                "message" => "Maximum 10 questions allowed for this course.",
+                "status" => 403
+            ]);
+        }
+
+        // Proceed with insert
+        if($this->setQuiz($foundModuleId, $this->course_id, $this->question, $this->option_a, $this->option_b, $this->option_c, $this->option_d, $this->answer)){
             return json_encode(["message"=>"successful","status"=>201]);
-        }else{
+        } else {
             return json_encode(["message"=>"error","status"=>401]);
         }
     }
+
+    private function countQuestionsByCourse($course_id) {
+        $sql = "SELECT COUNT(*) as total FROM quiz WHERE course_id = :course_id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int) $result['total'];
+    }
+
+
+
 }
 ?>

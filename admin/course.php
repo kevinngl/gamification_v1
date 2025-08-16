@@ -65,57 +65,116 @@ include "./layout/header.php";
   
   include "./layout/footer.php";
   ?>
-
-  <script >
+<script>
     $(document).ready(function(){
-    
-      $("#courseupload").on('submit', function(e){
-           e.preventDefault();
-          
-            const name = $('#name').val();
-            const description = $('#description').val();
-           if(name ==="" || description ===""){
-              $('.msg').html('<span class="alert alert-danger alert-dismissible my-2"> Fields can not be empty</span>');
-            return false
-           }
-           //ajax
 
-           $.ajax({
-               type:'POST',
-               url: 'api/course/createcourse.php',
-               data: new FormData(this), 
-              dataType:'json',
-               contentType:false,
-               cache: false,
-               processData:false,
-               beforeSend: function(){
-                   $('.submitcourse').attr("disabled","disabled");
-                   $('.submitcourse').html(" Please wait....");
-                   $('#courseupload').css("opacity",".5");
-               },
-               success:function(response){ 
-                   $('.msg').html('');
-                
-                 if(response.message==="successful"){
-                       $('#courseupload')[0].reset();
-                       $('.msg').html("<p   class='alert alert-success'>Course created successfully!</p>");
-                       $('.submitcourse').html("submit");
-					
-                   
-                   }else{
-                    $('#courseupload')[0].reset();
-                       $('.msg').html("<p class='alert  alert-danger'>"+response.message+"</p>");
-                       $('.submitcourse').html("Try Again");
-                   }
-                   
-                   $('#courseupload').css("opacity","");
-                   $(".submitcourse").removeAttr("disabled");
+        $("#courseupload").on('submit', function(e){
+            e.preventDefault();
 
-                  
-               }
-           });
-           //
-       });
-      
+            const name = $('#name').val().trim();
+            const description = $('#description').val().trim();
+            const url = $('#link').val().trim();
+            const maxSize = 8 * 1024 * 1024; // 8 MB
+            const allowedImageTypes = ["image/jpeg","image/jpg","image/png","image/webp"];
+
+            // reset message
+            $('.msg').html('');
+
+            // Validation
+            if(name === "" || description === ""){
+                $('.msg').html('<div class="alert alert-danger my-2">Fields cannot be empty</div>');
+                return false;
+            }
+
+            // URL validation (optional field, only check if provided)
+            if(url !== ""){
+                const urlPattern = /^(https?:\/\/)[\w\-]+(\.[\w\-]+)+[/#?]?.*$/;
+                if(!urlPattern.test(url)){
+                    $('.msg').html('<div class="alert alert-danger my-2">Please enter a valid URL.</div>');
+                    return false;
+                }
+            }
+
+            let imageFile = $('#image')[0].files[0];
+            let materialFile = $('#material')[0].files[0];
+
+            // Check image
+            if (imageFile) {
+                if (imageFile.size > maxSize) {
+                    $('.msg').html('<div class="alert alert-danger my-2">Image file is too large! Max size is 8 MB.</div>');
+                    return false;
+                }
+                if (!allowedImageTypes.includes(imageFile.type)) {
+                    $('.msg').html('<div class="alert alert-danger my-2">Only JPG, JPEG, PNG, and WEBP images are allowed.</div>');
+                    return false;
+                }
+            }
+
+            // Check material
+            const allowedMaterialExtensions = ["pdf","docx","doc","txt","zip","rar","md","ppt","pptx","odp"];
+            if (materialFile) {
+                let ext = materialFile.name.split('.').pop().toLowerCase();
+                if (!allowedMaterialExtensions.includes(ext)) {
+                    $('.msg').html('<div class="alert alert-danger my-2">Invalid material file type. Allowed: PDF, DOC, DOCX, TXT, ZIP, RAR, MD, PPT, PPTX, ODP.</div>');
+                    return false;
+                }
+                if (materialFile.size > maxSize) {
+                    $('.msg').html('<div class="alert alert-danger my-2">Material file is too large! Max size is 8 MB.</div>');
+                    return false;
+                }
+            }
+
+            // AJAX submit
+            $.ajax({
+                type:'POST',
+                url: 'api/course/createcourse.php',
+                data: new FormData(this),
+                dataType:'json',
+                contentType:false,
+                cache: false,
+                processData:false,
+                beforeSend: function(){
+                    $('.submitcourse').attr("disabled","disabled").html(" Please wait...");
+                    $('#courseupload').css("opacity",".5");
+                },
+                success:function(response){
+                    $('.msg').html('');
+
+                    if(response.status === 200){
+                        $('#courseupload')[0].reset();
+                        $('.msg').html("<div class='alert alert-success'>"+response.message+"</div>");
+                    }else{
+                        $('.msg').html("<div class='alert alert-danger'>"+response.message+"</div>");
+                    }
+
+                    $('.submitcourse').html("Submit").removeAttr("disabled");
+                    $('#courseupload').css("opacity","");
+                },
+                error: function(xhr, status, error){
+                    $('.msg').html("<div class='alert alert-danger'>Server error: "+error+"</div>");
+                    $('.submitcourse').html("Submit").removeAttr("disabled");
+                    $('#courseupload').css("opacity","");
+                }
+            });
+        });
+
+        // Image preview
+        $('#image').on('change', function(){
+            if(this.files[0]){
+                let reader = new FileReader();
+                reader.onload = function(e){
+                    $('.msg').html('<img src="'+e.target.result+'" class="img-thumbnail my-2" width="150"/>');
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Show selected material file name
+        $('#material').on('change', function(){
+            if(this.files[0]){
+                $('.msg').append('<p class="text-info">Selected material: '+this.files[0].name+'</p>');
+            }
+        });
+
     });
-  </script>
+</script>

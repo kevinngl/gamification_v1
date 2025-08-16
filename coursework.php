@@ -1,12 +1,11 @@
 <?php
 include "./function.php";
-
-include "./header.php";
 if(!isLoggedIn())
 {
     header('location:login.php');
     exit();
 }
+include "./header.php";
 ?>
       <section class="bg-body-tertiary">
         <div class="container-fluid">

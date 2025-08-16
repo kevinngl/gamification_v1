@@ -104,25 +104,20 @@ $(document).ready(function(){
                  $('.submitmodule').html(" Please wait....");
                  $('#moduleupload').css("opacity",".5");
              },
-             success:function(response){ 
+             success:function(response){
                  $('.msg').html('');
-              
-               if(response.message==="successful"){
+
+                 if(response.status === "success" || response.message === "successful"){
                      $('#moduleupload')[0].reset();
-                     $('.msg').html("<p   class='alert alert-success'>Module created successfully!</p>");
+                     $('.msg').html("<p class='alert alert-success'>Module created successfully!</p>");
                      $('.submitmodule').html("submit");
-        
-                 
-                 }else{
-                  $('#moduleupload')[0].reset();
-                     $('.msg').html("<p class='alert  alert-danger'>"+response.message+"</p>");
+                 } else {
+                     $('.msg').html("<p class='alert alert-danger'>"+response.message+"</p>");
                      $('.submitmodule').html("Try Again");
                  }
-                 
+
                  $('#moduleupload').css("opacity","");
                  $(".submitmodule").removeAttr("disabled");
-
-                
              }
          });
          //

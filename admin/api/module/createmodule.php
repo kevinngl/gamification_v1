@@ -18,7 +18,4 @@ echo $create->Create();
 }else{
     echo "error";
 }
-
-
-
 ?>

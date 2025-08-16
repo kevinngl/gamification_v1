@@ -11,9 +11,9 @@
 
                     <?php
 
-$host = "localhost";
-$username = "root";
-$password = "";
+$host = "db";
+$username = "user";
+$password = "password";
 $database = "gamification";
 
 try {

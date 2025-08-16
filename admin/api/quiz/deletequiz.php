@@ -1,25 +1,22 @@
 <?php
-
 // Headers
-if($_POST){
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
 
-$course = (int)trim($_POST['quiz_id']);
+if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quiz_id'])) {
 
-include "../../model/Quiz.php";
-$create = new Quiz();
+    $quizId = (int) trim($_POST['quiz_id']);
 
+    include "../../model/Quiz.php";
+    $quiz = new Quiz();
 
+    if($quiz->deletequiz($quizId)){
+        echo json_encode(["success" => true, "message" => "Deleted successfully"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "Unable to delete"]);
+    }
 
-        if($create->deletequiz($course)){
-            echo json_encode(["message"=>"deleted successfully","status"=>201]);
-        }
-        else{
-            echo json_encode(["message"=>"unable to delete","status"=>401]);
-        }
-}else{
-   
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid request"]);
 }
-
-
-
 ?>

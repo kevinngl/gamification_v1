@@ -71,18 +71,16 @@ if(!isLoggedIn())
 
  ?>
  <script>
-     console.log("masok");
-
     let levelRanges = [
-        { level: "Basic", earning: 0, xps_coin: 0 },
-        { level: "Pro", earning: 200, xps_coin: 1000 },
-        { level: "Master", earning: 500, xps_coin: 2000 }
+        { level: "Basic", earnings: 0, xps_coin: 0 },
+        { level: "Pro", earnings: 200, xps_coin: 1000 },
+        { level: "Master", earnings: 500, xps_coin: 2000 }
     ];
 
 
     function getUserLevel(user) {
     for (let i = levelRanges.length - 1; i >= 0; i--) {
-        if (user.earnings >= levelRanges[i].earning && user.xps_coin >= levelRanges[i].xps_coin) {
+        if (user.earnings >= levelRanges[i].earnings && user.xps_coin >= levelRanges[i].xps_coin) {
             return levelRanges[i].level;
         }
     }
@@ -98,8 +96,8 @@ if(!isLoggedIn())
             // Sort the data based on earning and xps_coin
             jsonData.data.sort(function (a, b) {
                 // Compare by earning first
-                if (a.earning !== b.earning) {
-                    return b.earning - a.earning; // Descending order by earning
+                if (a.earnings !== b.earnings) {
+                    return b.earnings - a.earnings; // Descending order by earning
                 } else {
                     return b.xps_coin - a.xps_coin; // If earning is the same, compare by xps_coin
                 }

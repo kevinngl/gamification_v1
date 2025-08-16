@@ -2,11 +2,12 @@
 require_once "../../config/database.php";
 
 class Quiz extends Database {
-    protected function setQuiz($module_id, $course_id, $question, $optionA, $optionB, $optionC, $optionD, $answer) {
-        $query = "INSERT INTO quiz (module_id, course_id, question, option_a, option_b, option_c, option_d, correct_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    protected function setQuiz($module_id, $course_id, $question, $option_a, $option_b, $option_c, $option_d, $answer) {
+        $query = "INSERT INTO quiz (module_id, course_id, question, option_a, option_b, option_c, option_d, answer) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->connect()->prepare($query);
-        
-        if($stmt->execute([$module_id, $course_id, $question, $optionA, $optionB, $optionC, $optionD, $answer])) {
+
+        if ($stmt->execute([$module_id, $course_id, $question, $option_a, $option_b, $option_c, $option_d, $answer])) {
             return true;
         } else {
             error_log("SQL Error in setQuiz: " . implode(" ", $stmt->errorInfo()));
@@ -30,16 +31,17 @@ class Quiz extends Database {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function deletequiz($courseId) {
-        $sql = "DELETE FROM quiz WHERE id = ?";
-        $stmt = $this->connect()->prepare($sql);
-        // Parameter fungsi adalah $courseId, jadi gunakan itu
-        $stmt->bindParam(1, $courseId); 
-        if($stmt->execute()) {
-            return true;
-        } else {
+    public function deletequiz($quizId) {
+        try {
+            $sql = "DELETE FROM quiz WHERE id = ?";
+            $stmt = $this->connect()->prepare($sql);
+            $stmt->bindParam(1, $quizId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Delete quiz failed: " . $e->getMessage());
             return false;
         }
     }
+
 }
 ?>

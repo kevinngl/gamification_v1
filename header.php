@@ -42,6 +42,13 @@
                     <a class="nav-link active fw-bold text-muted" aria-current="page" href="./feedback.php"><i class="fa-solid fa-comment"></i></i>Feedback</a>
                   </li>
                 </ul>
+              <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                  <div class="d-flex px-3" role="search">
+                      <div class="text-center">
+                          <a href="./admin/index.php" class="fw-bold text-decoration-none text-dark">Admin Dashboard</a>
+                      </div>
+                  </div>
+              <?php endif; ?>
                 <div class="d-flex px-3" role="search">
                   <div class="text-center">
                       <a href="./logout.php" class="fw-bold text-decoration-none text-dark"><i class="fa-solid fa-right-to-bracket"></i>&nbsp;Logout</a>
