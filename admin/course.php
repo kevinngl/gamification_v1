@@ -142,7 +142,7 @@ include "./layout/header.php";
 
                     if(response.status === 200){
                         $('#courseupload')[0].reset();
-                        $('.msg').html("<div class='alert alert-success'>"+response.message+"</div>");
+                        $('.msg').html("<div class='alert alert-success'>"+ "Course Created" +"</div>");
                     }else{
                         $('.msg').html("<div class='alert alert-danger'>"+response.message+"</div>");
                     }
