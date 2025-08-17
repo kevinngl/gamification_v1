@@ -7,15 +7,21 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require "../../model/User.php";
 
-    $user     = strip_tags(trim($_POST['user'] ?? ''));
-    $course   = strip_tags(trim($_POST['course'] ?? ''));
-    $win      = strip_tags(trim($_POST['win'] ?? ''));
-    $score    = strip_tags(trim($_POST['score'] ?? ''));
-    $wincoin  = strip_tags(trim($_POST['wincoin'] ?? ''));
+    $user = strip_tags(trim($_POST['user'] ?? ''));
+    $course = strip_tags(trim($_POST['course'] ?? ''));
+    $win = strip_tags(trim($_POST['win'] ?? ''));   // gold/diamond/bronze/stone
+    $score = strip_tags(trim($_POST['score'] ?? '0'));
+    $wincoin = strip_tags(trim($_POST['wincoin'] ?? '0'));
+
+    if (empty($user) || empty($course)) {
+        http_response_code(400);
+        echo json_encode(['status' => 400, 'message' => 'Missing user or course']);
+        exit;
+    }
 
     $coin = new User();
 
-    // Step 1: Update coins
+    // Step 1: Update coins in user table
     $result = $coin->Coin($wincoin, $user);
     if ($result === false) {
         http_response_code(500);
@@ -23,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Step 2: Insert or update quiz score
     $exists = $coin->checkUserCourseExistence($user, $course);
     if (!$exists) {
         $resp = $coin->insertUserCourseEarning($user, $course, $win, $score);
@@ -31,8 +36,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resp = $coin->updateUserCourseEarning($user, $course, $win, $score);
     }
 
-    // Step 3: Respond
-    echo json_encode(['status' => 200, 'message' => 'User data updated successfully', 'scoreUpdate' => $resp]);
+    $quizModel = new Quiz();
+    $attempt = $quizModel->insertQuizAttempt($user, $course, $score, $win, $wincoin);
+
+    if ($attempt === false) {
+        http_response_code(500);
+        echo json_encode(['status' => 500, 'message' => 'Failed to record quiz attempt']);
+        exit;
+    }
+
+    // Step 4: Respond
+    echo json_encode([
+        'status' => 200,
+        'message' => 'User data updated successfully',
+        'scoreUpdate' => $resp,
+        'quizAttempt' => $attempt
+    ]);
     exit;
 
 } else {
