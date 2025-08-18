@@ -117,6 +117,8 @@ create table quiz_attempts
     result       enum ('gold', 'diamond', 'bronze', 'stone') default 'stone'           not null,
     coin_earned  int                                         default 0                 not null,
     completed_at timestamp                                   default CURRENT_TIMESTAMP null,
+    constraint uq_user_course
+        unique (user_id, course_id),
     constraint fk_quiz_attempts_course
         foreign key (course_id) references course (course_id)
             on update cascade on delete cascade,
