@@ -6,6 +6,7 @@ header('Access-Control-Allow-Headers: Access-Control-Allow-Headers, Content-Type
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require "../../model/User.php";
+    require "../../model/Quiz.php";
 
     $user = strip_tags(trim($_POST['user'] ?? ''));
     $course = strip_tags(trim($_POST['course'] ?? ''));
