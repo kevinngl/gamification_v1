@@ -1,9 +1,8 @@
 <?php
 
 session_start();
-if(isset($_SESSION['role'])&& $_SESSION['role']==="admin"){
-
-}else{
+if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
+} else {
     header("location:../index.php");
     exit();
 }
@@ -93,7 +92,7 @@ if(isset($_SESSION['role'])&& $_SESSION['role']==="admin"){
 
             <!--modules-->
 
-           
+
 
             <!-- Divider -->
             <hr class="sidebar-divider">
@@ -115,7 +114,7 @@ if(isset($_SESSION['role'])&& $_SESSION['role']==="admin"){
                         <h6 class="collapse-header">Quiz Components</h6>
                         <a class="collapse-item" href="./quiz.php">Add Quiz</a>
                         <a class="collapse-item" href="./quizlist.php">List Quiz</a>
-                      
+
                     </div>
                 </div>
             </li>
@@ -123,17 +122,17 @@ if(isset($_SESSION['role'])&& $_SESSION['role']==="admin"){
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
             <!-- Divider -->
-           
+
 
             <!-- Heading -->
             <div class="sidebar-heading py-3 ">
                 <a href="../index.php" class="btn btn-primary text-decoration-none text-light fs-4">
-               Visit Site Page
+                    Visit Site Page
                 </a>
-               
+
             </div>
 
-            
+
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">
@@ -200,12 +199,12 @@ if(isset($_SESSION['role'])&& $_SESSION['role']==="admin"){
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
-                                
+
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                               
+
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="../logout.php">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>

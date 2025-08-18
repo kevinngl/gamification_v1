@@ -1,6 +1,7 @@
 <?php
 include "../../model/Module.php";
-class ModuleController extends Module{
+class ModuleController extends Module
+{
     public $course_id;
     public $title;
     public $content;
@@ -14,38 +15,41 @@ class ModuleController extends Module{
 
     public $result;
 
-    private function clean(){
+    private function clean()
+    {
         $this->course_id = (int)trim($this->course_id);
         $this->title = htmlspecialchars(strip_tags(trim($this->title)));
         $this->content = htmlspecialchars(strip_tags(trim($this->content)));
         return true;
     }
 
-    private function emptyInput(){
-       
-        if(empty($this->course_id) || empty ($this->title) || empty ($this->content)){
+    private function emptyInput()
+    {
+
+        if (empty($this->course_id) || empty($this->title) || empty($this->content)) {
 
             $this->result = false;
-        }else{
+        } else {
             $this->result = true;
         }
 
         return $this->result;
     }
 
-    private function invalidContent(){
+    private function invalidContent()
+    {
 
         return str_word_count($this->content) < 10;
-
     }
 
-   
-    
-    
+
+
+
 
     //insert
 
-    public function Create() {
+    public function Create()
+    {
         $this->clean();
 
         // If any input is empty
@@ -77,9 +81,4 @@ class ModuleController extends Module{
             ]);
         }
     }
-
-
-} 
-
-
-?>
+}
