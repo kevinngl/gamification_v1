@@ -50,12 +50,12 @@ class Quiz extends Database
             "SELECT score, result, coin_earned, completed_at 
          FROM quiz_attempts 
          WHERE user_id = ? AND course_id = ? 
+         ORDER BY completed_at DESC 
          LIMIT 1"
         );
         $stmt->execute([$userId, $courseId]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-
 
     public function insertQuizAttempt($userId, $courseId, $score, $result, $coinEarned)
     {
@@ -68,8 +68,8 @@ class Quiz extends Database
                 coin_earned = VALUES(coin_earned),
                 completed_at = CURRENT_TIMESTAMP
         ");
-        return $stmt->execute([$userId, $courseId, $score, $result, $coinEarned]);
-    }
+            return $stmt->execute([$userId, $courseId, $score, $result, $coinEarned]);
+        }
 
     public function deletequiz($quizId)
     {
