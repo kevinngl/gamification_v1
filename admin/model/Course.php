@@ -100,14 +100,13 @@ class Course extends Database {
     
          
         }
-        
-        private function deleteRefTrack($courseId) {
-         
-            $deleteReferencesSql = "DELETE FROM track WHERE track_id = ?";
-            $stmtReferences = $this->connect()->prepare($deleteReferencesSql);
-            $stmtReferences->execute([$courseId]);
-     
-        }
+
+    private function deleteRefTrack($courseId) {
+        $deleteReferencesSql = "DELETE FROM track WHERE course_id = ?";
+        $stmtReferences = $this->connect()->prepare($deleteReferencesSql);
+        $stmtReferences->execute([$courseId]);
+    }
+
 }
 
 

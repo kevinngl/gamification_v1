@@ -51,7 +51,6 @@ if (!isLoggedIn()) {
                             <th scope="col">Email</th>
                             <th scope="col">Username</th>
                             <th scope="col">Earning</th>
-                            <th scope="col">XPS Coin</th>
                             <th scope="col">Level</th>
                         </tr>
                     </thead>
@@ -122,12 +121,15 @@ include "./footer.php"
             // Append data to the table
             let tableBody = $('#userTableBody');
             $.each(jsonData.data, function(index, user) {
+                if (user.earnings <= 0) {
+                    return;
+                }
+
                 let row = '<tr>';
                 row += '<td>' + user.rank + '</td>';
                 row += '<td>' + user.email + '</td>';
                 row += '<td>' + user.username + '</td>';
                 row += '<td>' + user.earnings + '</td>';
-                row += '<td>' + user.xps_coin + '</td>';
                 row += '<td>' + user.level + '</td>';
                 row += '</tr>';
                 tableBody.append(row);
