@@ -146,126 +146,107 @@ if(!isLoggedIn())
 include "./footer.php";
 ?>
 <script>
-$(document).ready(function(){
-  const usr = localStorage.getItem('user');
+    $(document).ready(function(){
+        const usr = localStorage.getItem('user');
+        const usr2 = $('#usery').val();
+        const realuser = usr ?? usr2;
 
-  const usr2 = $('#usery').val();
-
-
-  const realuser = usr ?? usr2;
-  
-    $.ajax({
-        url: 'admin/api/user/alluser.php', 
-        method: 'GET',
-        dataType: 'json',
-        success: function (jsonData) {
-            // Find the user with set variable
-            var user = jsonData.data.find(function (user) {
-                return user.user === realuser;
-            });
-
-            if (user) {
-                // Sort the data based on earning and xps_coin
-                jsonData.data.sort(function (a, b) {
-                    // Compare by earning first
-                    if (a.earning !== b.earning) {
-                        return b.earning - a.earning; // Descending order by earning
-                    } else {
-                        return b.xps_coin - a.xps_coin; // If earning is the same, compare by xps_coin
-                    }
+        $.ajax({
+            url: 'admin/api/user/alluser.php',
+            method: 'GET',
+            dataType: 'json',
+            success: function (jsonData) {
+                // Find the user with set variable
+                var user = jsonData.data.find(function (user) {
+                    return user.user === realuser;
                 });
 
-                // Assign ranks to each user
-                $.each(jsonData.data, function (index, user) {
-                    user.rank = index + 1; 
-                    user.level = getUserLevel(user); // Assign user level
-                });
+                if (user) {
+                    jsonData.data.sort(function (a, b) {
+                        if (a.earnings !== b.earnings) {
+                            return b.earnings - a.earnings;
+                        } else {
+                            return b.xps_coin - a.xps_coin;
+                        }
+                    });
 
+                    // Assign ranks and levels
+                    $.each(jsonData.data, function (index, userItem) {
+                        userItem.rank = index + 1;
+                        userItem.level = getUserLevel(userItem);
+                    });
 
-               
-                $('#user-rank').html(user.rank)  
-                $('#user-xps').html(user.xps_coin) 
-                $('#user-earning').html(user.earning) 
-                $('#user-level').html(user.level) 
-                fetchData(realuser)
+                    // Update UI with correct user values
+                    $('#user-rank').html(user.rank)
+                    $('#user-xps').html(user.xps_coin)
+                    $('#user-earning').html(user.earnings)
+                    $('#user-level').html(user.level)
 
-     
-            } else {
-                console.log('User with ID 1 not found');
+                    fetchData(realuser)
+
+                } else {
+                    console.log('User not found');
+                }
+            },
+            error: function () {
+                console.log('Error fetching data');
             }
-        },
-        error: function () {
-            console.log('Error fetching data');
+        });
+
+        function getUserLevel(user) {
+            var levelRanges = [
+                { level: "Basic", earnings: 0, xps_coin: 0 },
+                { level: "Pro", earnings: 200, xps_coin: 1000 },
+                { level: "Master", earnings: 500, xps_coin: 2000 }
+            ];
+
+            for (let i = levelRanges.length - 1; i >= 0; i--) {
+                if (user.earnings >= levelRanges[i].earnings && user.xps_coin >= levelRanges[i].xps_coin) {
+                    return levelRanges[i].level;
+                }
+            }
+            return "Unknown";
         }
-    });
 
-    function getUserLevel(user) {
-        // Define level ranges
-        var levelRanges = [
-            { level: "Basic", earning: 0, xps_coin: 0 },
-            { level: "Pro", earning: 200, xps_coin: 1000 },
-            { level: "Master", earning: 500, xps_coin: 2000 }
-        ];
-
-        // Function to determine user level
-        for (let i = levelRanges.length - 1; i >= 0; i--) {
-        if (user.earning >= levelRanges[i].earning && user.xps_coin >= levelRanges[i].xps_coin) {
-            return levelRanges[i].level;
-        }
-    }
-        return "Unknown"; // Default level if not found in any range
-    }
-
-
-
-    function fetchData(user_data) {
+        function fetchData(user_data) {
             $.ajax({
-                url: 'admin/api/user/record.php', // path to view resource
+                url: 'admin/api/user/record.php',
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    // Handle the data returned from the server
-                   let result = data.data.filter((value,index)=>{
-                    return value.user ===user_data
-                   }).map((v,i)=>(
-                    `<div class="col-lg-3 col-md-6 col-sm-6" ">
-                         <a href="coursework.php?course=${v.course_id}&name=${v.title}&cn=${v.coin}" class="text-decoration-none">
-                         <div class="card rounded-0 border-0 shadow-sm mb-2 overflow-hidden" >
-                           <img src="./admin/uploads/${v.image}" class="card-img-top " style="height:150px" alt="...">
-                           <div class="card-body ">
-                               <div class="lh-sm ">
-                                 <h6 class=" fw-bold text-dark m-0 overflow-hidden" style ="text-overflow:ellipsis;white-space:nowrap;">${v.title}</h6>
-                                 <span class="small fw-bold text-muted">
-                                 
-                                 </span>
-                                 <div class="text-end small text-muted overflow-hidden mt-1" >
-                                  <div class="reward-score">
-                                  <span class="small fw-bold">score : ${v.score}</span>
-                                  </div>
-  
-                                   </div>
-                                   <span class="small fw-bold"><i></i>you were awarded a <strong>${v.win}</strong> in this course</i></span>
-                                  
-                                   
+                    let result = data.data.filter((value,index)=>{
+                        return value.user === user_data
+                    }).map((v,i)=>(
+                        `<div class="col-lg-3 col-md-6 col-sm-6">
+                       <a href="coursework.php?course=${v.course_id}&name=${v.title}&cn=${v.coin}" class="text-decoration-none">
+                       <div class="card rounded-0 border-0 shadow-sm mb-2 overflow-hidden">
+                         <img src="./admin/uploads/${v.image}" class="card-img-top " style="height:150px" alt="...">
+                         <div class="card-body ">
+                             <div class="lh-sm ">
+                               <h6 class=" fw-bold text-dark m-0 overflow-hidden" style ="text-overflow:ellipsis;white-space:nowrap;">${v.title}</h6>
+                               <div class="text-end small text-muted overflow-hidden mt-1">
+                                 <div class="reward-score">
+                                   <span class="small fw-bold">score : ${v.score}</span>
+                                 </div>
                                </div>
-                           </div>
+                               <span class="small fw-bold">You were awarded a <strong>${v.win}</strong> in this course</span>
+                             </div>
                          </div>
-                         </a>
-                     </div>`
-                   ))
-                   $('#participate').append(result.slice(0, 4).join(''));
-                   
+                       </div>
+                       </a>
+                   </div>`
+                    ));
+                    $('#participate').append(result.slice(0, 4).join(''));
                 },
                 error: function (error) {
-                    // Handle errors, e.g., display an error message
                     console.error('Error fetching data:', error);
                 }
             });
         }
 
-})
-  
+    });
 </script>
+
 
   </body>
    </html>
