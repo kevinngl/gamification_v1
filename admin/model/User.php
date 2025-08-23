@@ -72,8 +72,8 @@ class User extends Database{
 
 
                     $sql = $this->connect()->prepare("
-                        SELECT
-                            track.track_id,
+                     SELECT
+                            track.id AS track_id,
                             track.user_id,
                             track.course_id,
                             track.win,
@@ -85,8 +85,7 @@ class User extends Database{
                             course.image,
                             course.coin,
                             course.challenge
-                        FROM
-                            track
+                        FROM track
                         INNER JOIN users ON track.user_id = users.user_id
                         INNER JOIN course ON track.course_id = course.course_id
                     ");
