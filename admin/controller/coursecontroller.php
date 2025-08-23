@@ -17,7 +17,7 @@ class CourseController extends Course
 
     private function invalidDesc()
     {
-        return strlen(trim($this->description)) >= 30;
+        return strlen(trim($this->description)) < 30;
     }
 
     private function emptyInput()
@@ -125,7 +125,7 @@ class CourseController extends Course
         if (!$this->emptyInput()) {
             return json_encode(["message" => "Name and description are required", "status" => 400]);
         }
-        if (!$this->invalidDesc()) {
+        if ($this->invalidDesc()) {
             return json_encode(["message" => "Description is too short (min 30 characters)", "status" => 400]);
         }
 

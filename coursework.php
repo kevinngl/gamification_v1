@@ -218,6 +218,16 @@ include "./header.php";
                             $('#content').html(clickedModule.module_description || '');
                         }
                     });
+
+                    $('#accordionExample').on('click', '.accordion-button', function () {
+                        const $target = $($(this).data('bs-target'));
+                        if ($target.hasClass('show')) {
+                            $target.collapse('hide');
+                        }
+                    });
+                    $('#pills-home-tab').on('click', function (e) {
+                        location.reload();
+                    });
                 } else {
                     $('#topic').html(courseName || 'Course Title');
                     $('#content').html("<strong>No content uploaded yet.</strong>");
